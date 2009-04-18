@@ -141,7 +141,6 @@ class FreqDist(dict):
             key = _escape_spaces(unicode(key))
             print >> o_stream, "%s %d" % (key, count)
         o_stream.close()
-
         return
 
     #------------------------------------------------------------------------#
@@ -153,7 +152,7 @@ class FreqDist(dict):
         """
         i_stream = sopen(filename, 'r')
         for line in i_stream:
-            key, count = line.rstrip().split()
+            key, count = line.rstrip().split(_symbol_sep)
             key = _unescape_spaces(key)
             count = int(count)
             self.inc(key, count)
@@ -332,7 +331,7 @@ class ConditionalFreqDist(dict):
         """
         i_stream = sopen(filename, 'r')
         for line in i_stream:
-            condition, sample, count = line.rstrip().split()
+            condition, sample, count = line.rstrip().split(_symbol_sep)
             condition = _unescape_spaces(condition)
             sample = _unescape_spaces(sample)
             count = int(count)
@@ -390,7 +389,8 @@ class UnknownSymbolError(Exception):
 
 #----------------------------------------------------------------------------#
 
-_space_replacement = '_^_'
+_symbol_sep = ' '           # The separator we use in our file format
+_space_replacement = '_^_'  # The replacement string for dumps
 
 def _escape_spaces(value):
     """
@@ -402,7 +402,7 @@ def _escape_spaces(value):
     >>> _escape_spaces('cow')
     'cow'
     """
-    return value.replace(' ', _space_replacement)
+    return value.replace(_symbol_sep, _space_replacement)
 
 def _unescape_spaces(value):
     """
@@ -414,7 +414,7 @@ def _unescape_spaces(value):
     >>> _unescape_spaces('cow')
     'cow'
     """
-    return value.replace(_space_replacement, ' ')
+    return value.replace(_space_replacement, _symbol_sep)
 
 def _contains_escape(value):
     """
