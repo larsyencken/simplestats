@@ -26,12 +26,16 @@ class FreqDist(dict):
     probability estimations based on this distribution.
 
         >>> x = FreqDist()
+        >>> x.prob('unknown')
+        0.0
         >>> x.inc('a', 3)
         >>> x.inc('b')
         >>> x.prob('a')
         0.75
         >>> x.prob('b')
         0.25
+        >>> x.prob('unknown')
+        0.0
     """
     #------------------------------------------------------------------------#
     # PUBLIC METHODS
@@ -109,7 +113,11 @@ class FreqDist(dict):
 
     def prob(self, sample):
         """Returns the MLE probability of this sample."""
-        return self.get(sample, 0) / float(self._total)
+        c = self.get(sample, 0)
+        if c > 0:
+            return c / float(self._total)
+        else:
+            return 0.0
 
     #------------------------------------------------------------------------#
 
