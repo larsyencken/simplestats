@@ -23,10 +23,10 @@ setup(
         Provides basic statistics calcuations, frequency distributions, data
         approximation methods, and others.
         """,
-        url="http://bitbucket.org/lars512/simplestats/",
+        url="http://bitbucket.org/larsyencken/simplestats/",
         version=VERSION,
         author="Lars Yencken",
-        author_email="lljy@csse.unimelb.edu.au",
+        author_email="lars@yencken.org",
         license="BSD",
 
         package_dir={'simplestats': 'src'},
