@@ -2,9 +2,6 @@
 #
 #  setup.py
 #  simplestats
-# 
-#  Created by Lars Yencken on 10-04-2009.
-#  Copyright 2009 Lars Yencken. All rights reserved.
 #
 
 from setuptools import setup
@@ -17,18 +14,16 @@ f.write('version = "%s"\n' % VERSION)
 f.close()
 
 setup(
-        name='simplestats',
-        description="Simple statistics modules for data analysis.",
-        long_description = """
-        Provides basic statistics calcuations, frequency distributions, data
-        approximation methods, and others.
-        """,
-        url="http://bitbucket.org/larsyencken/simplestats/",
-        version=VERSION,
-        author="Lars Yencken",
-        author_email="lars@yencken.org",
-        license="BSD",
-
-        package_dir={'simplestats': 'src'},
-        packages=['simplestats'],
-    )
+    name='simplestats',
+    description="Simple statistics modules for data analysis.",
+    long_description="""
+    Provides basic statistics calcuations, frequency distributions, data
+    approximation methods, and others.
+    """,
+    url="http://bitbucket.org/larsyencken/simplestats/",
+    version=VERSION,
+    author="Lars Yencken",
+    author_email="lars@yencken.org",
+    license="BSD",
+    packages=['simplestats'],
+)

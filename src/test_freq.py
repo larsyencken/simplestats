@@ -2,9 +2,6 @@
 #
 #  test_freq.py
 #  simplestats
-# 
-#  Created by Lars Yencken on 10-04-2009.
-#  Copyright 2009 Lars Yencken. All rights reserved.
 #
 
 import unittest
@@ -12,25 +9,17 @@ import doctest
 
 import freq
 
-#----------------------------------------------------------------------------#
 
 def suite():
     testSuite = unittest.TestSuite((
-            unittest.makeSuite(FreqDistTestCase),
-            unittest.makeSuite(CondFreqDistTestCase),
-            doctest.DocTestSuite(freq),
-        ))
+        unittest.makeSuite(FreqDistTestCase),
+        unittest.makeSuite(CondFreqDistTestCase),
+        doctest.DocTestSuite(freq),
+    ))
     return testSuite
 
-#----------------------------------------------------------------------------#
 
 class FreqDistTestCase(unittest.TestCase):
-    """
-    This class tests the FreqDist class. 
-    """
-    def setUp(self):
-        pass
-
     def testBasic(self):
         x = freq.FreqDist()
         x.inc('dog')
@@ -39,11 +28,7 @@ class FreqDistTestCase(unittest.TestCase):
         x.inc('cat')
         self.assertEqual(x.prob('dog'), 0.5)
         self.assertEqual(x.prob('cat'), 0.5)
-    
-    def tearDown(self):
-        pass
 
-#----------------------------------------------------------------------------#
 
 class CondFreqDistTestCase(unittest.TestCase):
     def setUp(self):
@@ -54,34 +39,26 @@ class CondFreqDistTestCase(unittest.TestCase):
         model.inc('Dinner', 'Spaghetti', 2)
         model.inc('Dinner', 'Stir-fry')
         self.model = model
-        pass
 
     def test_dist(self):
         model = self.model
         self.assertEqual(
-                set(model.candidates('Breakfast')),
-                set([
-                    ('Cereal', -0.69314718055994529),
-                    ('Toast', -0.69314718055994529),
-                ])
-            )
+            set(model.candidates('Breakfast')),
+            set([('Cereal', -0.69314718055994529),
+                 ('Toast', -0.69314718055994529)])
+        )
         self.assertEqual(
-                set(model.candidates('Dinner')),
-                set([
-                    ('Spaghetti', -0.40546510810816444),
-                    ('Stir-fry', -1.0986122886681098),
-                ])
-            )
+            set(model.candidates('Dinner')),
+            set([('Spaghetti', -0.40546510810816444),
+                 ('Stir-fry', -1.0986122886681098)])
+        )
         self.assertEqual(
-                set(model.candidates('Lunch')),
-                set([('Sandwich', 0.0)]),
-            )
-        pass
+            set(model.candidates('Lunch')),
+            set([('Sandwich', 0.0)]),
+        )
 
     def testDerivativeDists(self):
-        """
-        Tests to_condition_dist() and to_sample_dist() method.
-        """
+        "Tests to_condition_dist() and to_sample_dist() methods."
         condition_dist = self.model.to_condition_dist()
         self.assertEqual(condition_dist._total, 6)
         self.assertEqual(condition_dist.prob('Dinner'), (3.0/6.0))
@@ -95,18 +72,7 @@ class CondFreqDistTestCase(unittest.TestCase):
         self.assertEqual(sample_dist.prob('Sandwich'), (1.0/6.0))
         self.assertEqual(sample_dist.prob('Cereal'), (1.0/6.0))
         self.assertEqual(sample_dist.prob('Toast'), (1.0/6.0))
-        pass
-
-    def tearDown(self):
-        pass
-
-#----------------------------------------------------------------------------#
 
 
 if __name__ == "__main__":
     unittest.TextTestRunner(verbosity=1).run(suite())
-
-#----------------------------------------------------------------------------#
-
-# vim: ts=4 sw=4 sts=4 et tw=78:
-

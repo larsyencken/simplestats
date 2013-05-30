@@ -1,26 +1,21 @@
 # -*- coding: utf-8 -*-
-#----------------------------------------------------------------------------#
-# test_sequences.py
-# vim: ts=4 sw=4 sts=4 et tw=78:
-# Mon Jun 25 15:14:02 2007
 #
-#----------------------------------------------------------------------------#
+#  test_sequences.py
+#  simplestats
+#
 
 import unittest
-import doctest
 import sequences
 
-#----------------------------------------------------------------------------#
 
 def suite():
     test_suite = unittest.TestSuite((
-            unittest.makeSuite(MiscTestCases),
-            unittest.makeSuite(ThreadingTestCase),
-            unittest.makeSuite(ZipWithTestCase),
-        ))
+        unittest.makeSuite(MiscTestCases),
+        unittest.makeSuite(ThreadingTestCase),
+        unittest.makeSuite(ZipWithTestCase),
+    ))
     return test_suite
 
-#----------------------------------------------------------------------------#
 
 class MiscTestCases(unittest.TestCase):
     def test_separate(self):
@@ -32,7 +27,7 @@ class MiscTestCases(unittest.TestCase):
 
         init_list = range(10)
         even, odd = sequences.separate(is_even, init_list)
-        
+
         assert even == [0,2,4,6,8]
         assert odd == [1,3,5,7,9]
 

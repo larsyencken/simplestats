@@ -2,21 +2,17 @@
 #
 #  stats.py
 #  simplestats
-# 
-#  Created by Lars Yencken on 10-04-2009.
-#  Copyright 2009 Lars Yencken. All rights reserved.
 #
 
 """
-This module is responsible for any general combinatoric methods, in
-particular determining possible combinations of input.
+General combinatoric methods, in particular determining possible combinations
+of input.
 """
 
-from math import sqrt
+from math import sqrt, isnan
 
 from errors import InsufficientData
 
-#----------------------------------------------------------------------------#
 
 def mean(values):
     """
@@ -41,7 +37,6 @@ def mean(values):
 
     return total / float(n)
 
-#----------------------------------------------------------------------------#
 
 def stddev(values):
     """
@@ -73,7 +68,6 @@ def stddev(values):
     n = float(n)
     return sqrt((totalSquared - total * total / n) / (n - 1))
 
-#----------------------------------------------------------------------------#
 
 def basic_stats(values):
     """
@@ -104,27 +98,6 @@ def basic_stats(values):
 
     return (mean_val, stddev_val)
 
-#----------------------------------------------------------------------------#
 
-def is_nan(x):
-    """
-    Returns True if the number is NaN, False otherwise.
-
-    >>> x = 1e300
-    >>> is_nan(x)
-    False
-    >>> inf = x*x
-    >>> is_nan(inf)
-    False
-    >>> nan = inf - inf
-    >>> is_nan(nan)
-    True
-    """
-    x = float(x)
-    if max(x, 1e10) is x and min(x, -1e10) is x:
-        return True
-    else:
-        return False
-
-#----------------------------------------------------------------------------#
-
+# XXX deprecate this method
+is_nan = isnan

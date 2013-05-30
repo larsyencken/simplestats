@@ -2,18 +2,16 @@
 #
 #  comb.py
 #  simplestats
-# 
-#  Created by Lars Yencken on 10-04-2009.
-#  Copyright 2009 Lars Yencken. All rights reserved.
 #
 
 """
 Combinations and permuatations of items.
 """
 
-from itertools import ifilter
+import itertools
 import warnings
 import sys
+
 
 class deprecated(object):
     def __init__(self, py_version, module_and_method):
@@ -34,6 +32,7 @@ class deprecated(object):
 
         return g
 
+
 @deprecated((2, 6), 'itertools.product')
 def combinations(*combination_list):
     """
@@ -52,7 +51,7 @@ def combinations(*combination_list):
     while combination_list:
         next_level_combos = []
         for item_to_add in combination_list.pop():
-            # add this item to the end of every existing combo 
+            # add this item to the end of every existing combo
             for existing_combo in combos:
                 next_level_combos.append(existing_combo + (item_to_add,))
 
@@ -60,10 +59,10 @@ def combinations(*combination_list):
 
     return combos
 
-#----------------------------------------------------------------------------#
 
 def iunique_pairs(input_list):
     return UniquePairsIterator(input_list)
+
 
 class UniquePairsIterator(object):
     """
@@ -82,7 +81,7 @@ class UniquePairsIterator(object):
         self.list_len = len(input_list)
 
         if self.list_len < 2:
-            raise ValueError, "input must be of length at least 2"
+            raise ValueError("input must be of length at least 2")
 
     def next(self):
         if self.i == self.list_len - 1 and self.j >= self.list_len:
@@ -105,54 +104,17 @@ class UniquePairsIterator(object):
     def __repr__(self):
         return '<UniquePairsIterator: %d items>' % len(self)
 
-#----------------------------------------------------------------------------#
 
-@deprecated((2, 6), 'itertools.combinations')
-def unique_tuples(input_list, n=2):
-    "Similar to combinations, but selects from the same list."
-    def filter_fn(x):
-        for i in xrange(n-1):
-            if x[i] >= x[i+1]:
-                return False
-        else:
-            return True
+def unique_tuples(xs, k=2):
+    return list(itertools.combinations(xs, k))
 
-    return filter(filter_fn, combinations(*(n*[input_list])))
 
-#----------------------------------------------------------------------------#
+def iunique_tuples(xs, k=2):
+    return itertools.combinations(xs, k)
 
-@deprecated((2, 6), 'itertools.combinations')
-def iunique_tuples(input_list, n=2):
-    "An iterator version of unique_tuples."
-    def filter_fn(x):
-        for i in xrange(n-1):
-            if x[i] >= x[i+1]:
-                return False
-        else:
-            return True
 
-    return ifilter(filter_fn, icombinations(*(n*[input_list])))
+icombinations = itertools.product
 
-#----------------------------------------------------------------------------#
-
-@deprecated((2, 6), 'itertools.product')
-def icombinations(*combination_lists):
-    """
-    As for combinations(), but returns an iterator.
-    """
-    combination_lists = map(list, combination_lists)
-    lengths = map(len, combination_lists)
-    combined = zip(combination_lists, lengths)
-    n_combs = reduce(lambda x, y: x*y, lengths)
-
-    for i in xrange(n_combs):
-        item = ()
-        for item_list, list_length in combined:
-            i, offset = divmod(i, list_length)
-            item += (item_list[offset],)
-        yield item
-
-#----------------------------------------------------------------------------#
 
 def combination_seqs(*combination_list):
     """
@@ -164,7 +126,6 @@ def combination_seqs(*combination_list):
     """
     return list(icombination_seqs(*combination_list))
 
-#----------------------------------------------------------------------------#
 
 def icombination_seqs(*combination_lists):
     """
@@ -179,22 +140,21 @@ def icombination_seqs(*combination_lists):
             result.extend(seq)
         yield tuple(result)
 
-#----------------------------------------------------------------------------#
 
-def segment_combinations(g_string):    
+def segment_combinations(g_string):
     """
     Determines the possible segment combinations based on the grapheme
     string alone, in particular due to kanji placement. For example::
 
         >>> segment_combinations('ab')
         [('a', 'b'), ('ab',)]
-    
+
     """
     # start out with just the first character
     segmentations = [[g_string[0]]]
 
     # add remaining characters one by one
-    for char in g_string[1:]: 
+    for char in g_string[1:]:
         next_segmentation_round = []
         for segment in segmentations:
             # the new char in its own segment
@@ -205,12 +165,11 @@ def segment_combinations(g_string):
             next_segmentation_round.append(segment)
 
         segmentations = next_segmentation_round
-    
+
     segmentations = map(tuple, segmentations)
 
     return segmentations
 
-#----------------------------------------------------------------------------#
 
 def isegment_combinations(g_string):
     """
@@ -229,7 +188,7 @@ def isegment_combinations(g_string):
 
     for i in xrange(n_combs):
         current_comb = [g_string[0]]
-        for j in xrange(1,g_string_size):
+        for j in xrange(1, g_string_size):
             i, has_boundary = divmod(i, 2)
             if has_boundary:
                 current_comb.append(g_string[j])
@@ -237,9 +196,6 @@ def isegment_combinations(g_string):
                 current_comb[-1] += g_string[j]
         yield tuple(current_comb)
 
-    return
-
-#----------------------------------------------------------------------------#
 
 def inclusion_combinations(sequence):
     """
@@ -260,5 +216,3 @@ def inclusion_combinations(sequence):
         current_combs += next_set
 
     return current_combs
-
-# vim: ts=4 sw=4 sts=4 et tw=78:

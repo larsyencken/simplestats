@@ -2,16 +2,12 @@
 #
 #  aggregate.py
 #  simplestats
-# 
-#  Created by Lars Yencken on 10-04-2009.
-#  Copyright 2009 Lars Yencken. All rights reserved.
 #
 
-"""
-Aggregating data into bins or other approximations.
-"""
+"Aggregating data into bins or other approximations."
 
 _eps = 1e-8
+
 
 def bins_by_data(data, n):
     """
@@ -19,7 +15,7 @@ def bins_by_data(data, n):
     of the data directly, distributes the remainder as evenly as possible.
     Returns an iterator over the bins.
 
-    @param data: A sequence of data. 
+    @param data: A sequence of data.
     """
     data.sort()
 
@@ -39,7 +35,6 @@ def bins_by_data(data, n):
 
         start_at = end_at
 
-    return
 
 def bins_by_increment(data, inc, key=lambda x: x[0]):
     """
@@ -56,12 +51,13 @@ def bins_by_increment(data, inc, key=lambda x: x[0]):
     for bin_start in frange(start_range, end_range, inc):
         bin_end = bin_start + inc
 
-        bin_data = [x for x in data if key(x) >= bin_start and \
-                key(x) < bin_end]
+        bin_data = [x for x in data if key(x) >= bin_start
+                    and key(x) < bin_end]
 
         yield (bin_start, bin_end), bin_data
 
     return
+
 
 def bins_by_range(data, n, key=lambda x: x[0]):
     """
@@ -86,12 +82,11 @@ def bins_by_range(data, n, key=lambda x: x[0]):
         else:
             use_bin_end = bin_end
 
-        bin_data = [x for x in data if key(x) >= bin_start and \
-                key(x) < use_bin_end]
+        bin_data = [x for x in data if key(x) >= bin_start
+                    and key(x) < use_bin_end]
 
         yield (bin_start, bin_end), bin_data
 
-    return
 
 def frange(start, end=None, inc=None):
     """
@@ -100,13 +95,13 @@ def frange(start, end=None, inc=None):
 
         >>> frange(1.0, 3.0, 0.5)
         [1.0, 1.5, 2.0, 2.5]
-    """ 
+    """
 
-    if end == None:
+    if end is None:
         end = start + 0.0
         start = 0.0
 
-    if inc == None:
+    if inc is None:
         inc = 1.0
 
     L = []
@@ -117,7 +112,5 @@ def frange(start, end=None, inc=None):
         elif inc < 0 and next <= end:
             break
         L.append(next)
-        
-    return L
 
-# vim: ts=4 sw=4 sts=4 et tw=78:
+    return L

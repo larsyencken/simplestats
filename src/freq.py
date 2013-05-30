@@ -2,14 +2,10 @@
 #
 #  freq.py
 #  simplestats
-# 
-#  Created by Lars Yencken on 10-04-2009.
-#  Copyright 2009 Lars Yencken. All rights reserved.
 #
 
-"A simple frequency distribution, modelled after that in NLTK."
+"A frequency distribution, modelled after that in NLTK."
 
-#----------------------------------------------------------------------------#
 
 import sys
 import bz2
@@ -18,7 +14,6 @@ import codecs
 
 from math import log
 
-#----------------------------------------------------------------------------#
 
 class FreqDist(dict):
     """
@@ -37,14 +32,10 @@ class FreqDist(dict):
         >>> x.prob('unknown')
         0.0
     """
-    #------------------------------------------------------------------------#
-    # PUBLIC METHODS
-    #------------------------------------------------------------------------#
-
     def __init__(self, pairSeq=None):
         """
-        Constructor. Can optionally be given a sequence of (sample, count)
-        pairs to load counts from.
+        Can optionally be given a sequence of (sample, count) pairs to load
+        counts from.
         """
         self._total = 0
 
@@ -52,33 +43,24 @@ class FreqDist(dict):
             for sample, count in pairSeq:
                 self[sample] = count
                 self._total += count
-        return
-
-    #------------------------------------------------------------------------#
 
     def total():
-        doc = "The total count."
+        doc = "The total count."  # noqa
+
         def fget(self):
             return self._total
         return locals()
     total = property(**total())
 
-    #------------------------------------------------------------------------#
-
     def inc(self, sample, n=1):
-        """Add one to the count for this sample."""
         self.__setitem__(sample, self.get(sample, 0) + n)
         self._total += n
-        return
-
-    #------------------------------------------------------------------------#
 
     def decrement(self, sample, n=1):
-        """Remove one to the count for this sample."""
         count = self[sample]
-        
+
         if count < n:
-            raise ValueError, "Can't reduce a count below zero"
+            raise ValueError("can't reduce a count below zero")
         elif count == n:
             # If we reduce a count to zero, delete it.
             self._total -= n
@@ -109,8 +91,6 @@ class FreqDist(dict):
         """Return the frequency count of the sample."""
         return self.get(sample, 0)
 
-    #------------------------------------------------------------------------#
-
     def prob(self, sample):
         """Returns the MLE probability of this sample."""
         c = self.get(sample, 0)
@@ -119,13 +99,9 @@ class FreqDist(dict):
         else:
             return 0.0
 
-    #------------------------------------------------------------------------#
-
     def log_prob(self, sample):
         """Returns the log MLE probability of this sample."""
         return log(self.get(sample, 0) / float(self._total))
-
-    #------------------------------------------------------------------------#
 
     def candidates(self):
         """
@@ -133,12 +109,9 @@ class FreqDist(dict):
         probability of each sample.
         """
         return [
-                (k, log(v/float(self._total))) \
-                for (k, v) \
-                in self.iteritems()
-            ]
-
-    #------------------------------------------------------------------------#
+            (k, log(v / float(self._total)))
+            for (k, v) in self.iteritems()
+        ]
 
     def dump(self, filename):
         """
@@ -147,8 +120,8 @@ class FreqDist(dict):
         reconstructed identically.
         """
         o_stream = sopen(filename, 'w')
-        for key, count in sorted(self.iteritems(), key=lambda x: x[1],  
-                reverse=True):
+        for key, count in sorted(self.iteritems(), key=lambda x: x[1],
+                                 reverse=True):
             key = _escape_spaces(unicode(key))
             print >> o_stream, "%s %d" % (key, count)
         o_stream.close()
@@ -187,15 +160,7 @@ class FreqDist(dict):
     def merge(self, rhs_dist):
         for sample, count in rhs_dist.iteritems():
             self.inc(sample, count)
-        return
 
-    #------------------------------------------------------------------------#
-    # PRIVATE METHODS
-    #------------------------------------------------------------------------#
-
-    #------------------------------------------------------------------------#
-
-#----------------------------------------------------------------------------#
 
 class DefaultFreqDist(FreqDist):
     """
@@ -205,45 +170,41 @@ class DefaultFreqDist(FreqDist):
     def __init__(self, dist):
         self.update(dist)
         self._total = dist._total
-        
+
         # Prune empty counts
         for key in self.keys():
             if FreqDist.__getitem__(self, key) == 0:
                 del self[key]
-        
+
         self._min = min(self.itervalues())
         self._min_prob = self._min / float(self._total)
         self._min_log_prob = log(self._min_prob)
-        
+
     def __getitem__(self, key):
         if key in self:
             return FreqDist.__getitem__(self, key)
-        
+
         return self._min
-    
+
     def prob(self, key):
         if key in self:
             return FreqDist.prob(self, key)
-        
+
         return self._min_prob
-    
+
     def log_prob(self, key):
         if key in self:
             return FreqDist.log_prob(self, key)
-        
+
         return self._min_log_prob
-        
-    
+
+
 #----------------------------------------------------------------------------#
 
 class ConditionalFreqDist(dict):
     """
     A model for P(Sample|Condition) for a number of conditions.
     """
-    #------------------------------------------------------------------------#
-    # PUBLIC METHODS
-    #------------------------------------------------------------------------#
-
     def inc(self, condition, sample, n=1):
         """Increments a count of (sample|condition)."""
         condition_dist = self.get(condition)
@@ -253,8 +214,6 @@ class ConditionalFreqDist(dict):
         condition_dist.inc(sample, n)
         return
 
-    #------------------------------------------------------------------------#
-
     def prob(self, condition, sample):
         """
         Returns P(sample | condition). An exception is raised for unseen
@@ -262,11 +221,9 @@ class ConditionalFreqDist(dict):
         """
         condition_dist = self.get(condition)
         if condition_dist is None:
-            raise UnknownSymbolError, condition
-        else:
-            return condition_dist.prob(sample)
+            raise UnknownSymbolError(condition)
 
-    #------------------------------------------------------------------------#
+        return condition_dist.prob(sample)
 
     def log_prob(self, condition, sample):
         """
@@ -275,12 +232,12 @@ class ConditionalFreqDist(dict):
         """
         condition_dist = self.get(condition)
         if condition_dist is None:
-            raise UnknownSymbolError, condition
-        else:
-            return condition_dist.log_prob(sample)
+            raise UnknownSymbolError(condition)
+
+        return condition_dist.log_prob(sample)
 
     #------------------------------------------------------------------------#
-    
+
     def candidates(self, condition):
         "Return candidates for the given condition."
         conditionModel = self.get(condition)
@@ -317,8 +274,6 @@ class ConditionalFreqDist(dict):
 
         return newModel
 
-    #------------------------------------------------------------------------#
-
     def dump(self, filename):
         """
         Dump this model to a filename.
@@ -332,9 +287,6 @@ class ConditionalFreqDist(dict):
                     condition, sample, count
                 )
         o_stream.close()
-        return
-
-    #------------------------------------------------------------------------#
 
     def load(self, filename):
         """
@@ -385,20 +337,17 @@ class ConditionalFreqDist(dict):
 #----------------------------------------------------------------------------#
 
 def smooth_by_adding_one(freq_dist):
-    # XXX this type of smoothing has a particular name (Bell smoothing?) 
+    # XXX this type of smoothing has a particular name (Bell smoothing?)
     for sample in freq_dist.iterkeys():
         freq_dist[sample] += 1
     return
 
-#----------------------------------------------------------------------------#
 
-class UnknownSymbolError(Exception):
-    """
-    An error which gets thrown when encountering an unknown character.
-    """
+# XXX replace with KeyError
+class UnknownSymbolError(KeyError):
+    "An error which gets thrown when encountering an unknown character."
     pass
 
-#----------------------------------------------------------------------------#
 
 _symbol_sep = ' '           # The separator we use in our file format
 _space_replacement = '_^_'  # The replacement string for dumps
@@ -406,7 +355,7 @@ _space_replacement = '_^_'  # The replacement string for dumps
 def _escape_spaces(value):
     """
     Esacapes any spaces in the given string with a special value.
-    
+
     >>> _escape_spaces('dog eats cat')
     'dog_^_eats_^_cat'
 
@@ -418,10 +367,10 @@ def _escape_spaces(value):
 def _unescape_spaces(value):
     """
     Unescapes any escaped spaces in the string.
-    
+
     >>> _unescape_spaces('dog_^_eats_^_cat')
     'dog eats cat'
-    
+
     >>> _unescape_spaces('cow')
     'cow'
     """
@@ -430,10 +379,10 @@ def _unescape_spaces(value):
 def _contains_escape(value):
     """
     Checks the string for the special replacement sequence.
-    
+
     >>> _contains_escape('cow')
     False
-    
+
     >>> _contains_escape('dog_^_eats_^_cat')
     True
     """

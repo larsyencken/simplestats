@@ -1,22 +1,16 @@
 # -*- coding: utf-8 -*-
-#----------------------------------------------------------------------------#
-# sequences.py
-# vim: ts=4 sw=4 sts=4 et tw=78:
-# Mon Jun 25 14:53:16 2007
 #
-#----------------------------------------------------------------------------#
+#  sequences.py
+#  simplestats
+#
 
 """
-This module contains methods for dealing with sequences. In particular, it
-contains iterators for interesting sequences and methods for sequence/tuple
+Iterators for interesting sequences and methods for sequence/tuple
 transformations.
 """
 
-#----------------------------------------------------------------------------#
-
 from itertools import izip, chain
 
-#----------------------------------------------------------------------------#
 
 def zip_with(method, listA, listB):
     """
@@ -31,18 +25,14 @@ def zip_with(method, listA, listB):
     """
     return list(izip_with(method, listA, listB))
 
-#----------------------------------------------------------------------------#
 
 def izip_with(method, listA, listB):
     """
-    As with zip_with(), but provides an iterator. 
+    As with zip_with(), but provides an iterator.
     """
     for itemA, itemB in izip(listA, listB):
         yield method(itemA, itemB)
-    
-    return
 
-#----------------------------------------------------------------------------#
 
 def flatten(object_seq):
     """
@@ -58,7 +48,6 @@ def flatten(object_seq):
     """
     return list(iflatten(object_seq))
 
-#----------------------------------------------------------------------------#
 
 def iflatten(object_seq):
     """
@@ -81,7 +70,7 @@ def iflatten(object_seq):
                 continue
             try:
                 # Try to coerce this item into a sequence.
-                sub_seq = iter(item)
+                iter(item)
             except TypeError:
                 # Failed, it's not a sequence of objects.
                 yield item
@@ -92,9 +81,6 @@ def iflatten(object_seq):
         except StopIteration:
             break
 
-    return
-
-#----------------------------------------------------------------------------#
 
 def unzip(pair_list):
     """
@@ -107,7 +93,7 @@ def unzip(pair_list):
     @param pair_list: The sequence of tuples to draw the input from.
     """
     if not pair_list:
-        raise ValueError, "need a non-empty input list"
+        raise ValueError("need a non-empty input list")
 
     num_lists = len(pair_list[0])
 
@@ -118,10 +104,9 @@ def unzip(pair_list):
     for pair in pair_list:
         for i in range(num_lists):
             new_lists[i].append(pair[i])
-    
+
     return tuple(new_lists)
 
-#----------------------------------------------------------------------------#
 
 def thread(input_list, tuple_size=2):
     """
@@ -136,7 +121,6 @@ def thread(input_list, tuple_size=2):
     """
     return list(ithread(input_list, tuple_size))
 
-#----------------------------------------------------------------------------#
 
 def ithread(input_seq, tuple_size=2):
     """
@@ -151,7 +135,7 @@ def ithread(input_seq, tuple_size=2):
     while True:
         output = []
         try:
-            for i in range(tuple_size):
+            for i in list_range:
                 output.append(input_seq.next())
         except StopIteration:
             break
@@ -159,9 +143,6 @@ def ithread(input_seq, tuple_size=2):
         else:
             yield tuple(output)
 
-    return
-
-#----------------------------------------------------------------------------#
 
 def iunthread(input_tuples):
     """
@@ -178,9 +159,6 @@ def iunthread(input_tuples):
         for item in item_tuple:
             yield item
 
-    return
-
-#----------------------------------------------------------------------------#
 
 def unthread(input_tuples):
     """
@@ -195,7 +173,6 @@ def unthread(input_tuples):
     """
     return list(iunthread(input_tuples))
 
-#----------------------------------------------------------------------------#
 
 def repeat(n, item):
     """
@@ -212,32 +189,24 @@ def repeat(n, item):
     """
     for i in xrange(n):
         yield item
-    return
 
-#----------------------------------------------------------------------------#
 
 def repeate_indef(item):
-    """Returns an iterator which repeats the item indefinitely."""
+    "Returns an iterator which repeats the item indefinitely."
     while 1:
         yield item
 
-    return
-
-#----------------------------------------------------------------------------#
 
 def succession(item_list):
     """
     Returns an iterator which builds up the item list point by point.
-        
+
         >>> list(succession([1, 2, 3]))
         [[1], [1, 2], [1, 2, 3]]
     """
     for i in xrange(1, len(item_list)+1):
         yield item_list[:i]
-    
-    return
 
-#----------------------------------------------------------------------------#
 
 def iwindow(item_list, window_size=2, pre_blanks=False):
     """
@@ -255,19 +224,17 @@ def iwindow(item_list, window_size=2, pre_blanks=False):
     """
     if pre_blanks:
         if window_size < 2:
-            raise ValueError, "Need a window size >= 2 to use pre-blanks"
+            raise ValueError("Need a window size >= 2 to use pre-blanks")
         item_list = [None]*(window_size-1) + item_list
 
     for end_window in range(window_size, len(item_list)+1):
         yield tuple(item_list[end_window-window_size:end_window])
 
-    return 
 
 def window(item_list, window_size=2, pre_blanks=False):
     """Identical to iwindow(), but returns a list."""
     return list(iwindow(item_list, window_size, pre_blanks))
 
-#----------------------------------------------------------------------------#
 
 def group_by_lambda(func, items):
     """Performs a grouping of the items by lambda value."""
@@ -280,16 +247,15 @@ def group_by_lambda(func, items):
         item_list = groups.get(key_value, [])
         item_list.append(item)
         groups[key_value] = item_list
-    
+
     return groups
 
-#----------------------------------------------------------------------------#
 
 def multi_dict(input_pairs):
     """
     Similar to casting pairs to a dictionary, except that repeated pairs
     are allowed.
-    
+
         >>> dict( [('a', 1), ('b', 2), ('a', 3)] )
         {'a': 3, 'b': 2}
         >>> multi_dict( [('a', 1), ('b', 2), ('a', 3)] )
@@ -304,12 +270,11 @@ def multi_dict(input_pairs):
         existing_values = output_dict.get(key, [])
         existing_values.append(value)
         output_dict[key] = existing_values
-    
+
     return output_dict
 
-#----------------------------------------------------------------------------#
 
-def procmap(procedure, item_list):
+def procmap(method, item_list):
     """
     Like map(), but where the method being applied has no return value. In
     other words, the procedure is called on every item in the list
@@ -322,10 +287,7 @@ def procmap(procedure, item_list):
     """
     for item in item_list:
         method(item)
-    
-    return
 
-#----------------------------------------------------------------------------#
 
 def tail_enumerate(sequence):
     """
@@ -337,9 +299,6 @@ def tail_enumerate(sequence):
         yield (item, i)
         i += 1
 
-    return
-
-#----------------------------------------------------------------------------#
 
 def separate(method, seq):
     """
@@ -350,7 +309,7 @@ def separate(method, seq):
     @param method: The boolean-valued function to separate with.
     @type method: function
     @param seq: A sequence of objects.
-    @type seq: sequence 
+    @type seq: sequence
     @return: A (true_list, false_list) tuple.
     """
     true_list = []
@@ -364,15 +323,14 @@ def separate(method, seq):
 
     return (true_list, false_list)
 
-#----------------------------------------------------------------------------#
 
 def separate_by_class(method, seq):
     """
     Distributes a sequence into a dictionary of classes, using the given
-    method's return value as the class label. This is a generalization of 
+    method's return value as the class label. This is a generalization of
     the separate() method.
 
-    @param method: The function generating class labels from items. 
+    @param method: The function generating class labels from items.
     @type method: function
     @param seq: A sequence of objects.
     @type seq: sequence
@@ -388,12 +346,11 @@ def separate_by_class(method, seq):
 
     return results
 
-#----------------------------------------------------------------------------#
 
 def head(n, seq):
     """
     Returns an iterator over the first n items in a sequence.
-    
+
     If the sequence is itself an iterator, this will also advance the
     iterator n places.
 
@@ -427,7 +384,6 @@ def head(n, seq):
 
     return result
 
-#----------------------------------------------------------------------------#
 
 def groups_of_n(n, seq):
     """
@@ -439,10 +395,9 @@ def groups_of_n(n, seq):
     """
     if hasattr(seq, '__getslice__'):
         return groups_of_n_sliced(n, seq)
-    else:
-        return groups_of_n_iter(n, seq)
 
-#----------------------------------------------------------------------------#
+    return groups_of_n_iter(n, seq)
+
 
 def groups_of_n_iter(n, seq):
     """A version of groups_of_n which always uses iterators."""
@@ -452,9 +407,6 @@ def groups_of_n_iter(n, seq):
         yield result
         result = head(n, seq)
 
-    return
-
-#----------------------------------------------------------------------------#
 
 def groups_of_n_sliced(n, seq):
     """A version of groups_of_n which always uses slices."""
@@ -464,14 +416,12 @@ def groups_of_n_sliced(n, seq):
         yield result
         i += n
         result = seq[i:i+n]
-    return
 
-#----------------------------------------------------------------------------#
 
 def ihead(n, seq):
     """
     Returns an iterator over the first n items in a sequence.
-    
+
     If the sequence is itself an iterator, this will also advance the
     iterator n places.
 
@@ -499,8 +449,6 @@ def ihead(n, seq):
         if i >= n:
             break
 
-    return
-#----------------------------------------------------------------------------#
 
 def tail(n, seq):
     """
@@ -524,8 +472,6 @@ def tail(n, seq):
 
     if i <= n:
         return output[:i]
-    else:
-        start = i % n
-        return output[start:] + output[:start]
 
-#----------------------------------------------------------------------------#
+    start = i % n
+    return output[start:] + output[:start]
