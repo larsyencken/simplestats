@@ -1,4 +1,3 @@
-syntax: glob
 build
 dist
 *.pyo
@@ -7,3 +6,4 @@ dist
 *.egg-info
 *.egg
 __version__.py
+env
