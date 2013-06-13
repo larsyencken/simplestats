@@ -1,5 +1,7 @@
 # simplestats
 
+[![Build Status](https://travis-ci.org/larsyencken/simplestats.png)](https://travis-ci.org/larsyencken/simplestats)
+
 ### Installing
 
 `simplestats` is [available on PyPI](http://pypi.python.org/pypi/simplestats/), so you can install it with pip:
