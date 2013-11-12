@@ -72,3 +72,7 @@ The `comb` module also contains various similar methods which generate permutati
 >>> segment_combinations(['re', 'tri', 'ed'])
 [('re', 'tri', 'ed'), ('re', 'tried'), ('retri', 'ed'), ('retried',)]
 ```
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/larsyencken/simplestats/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
